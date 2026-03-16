@@ -10,7 +10,6 @@ The framework demonstrates a scalable test architecture including **Page Object 
 • Structured logging.
 • Cross-browser execution.
 • Allure reporting integration.
-• Cross-browser execution.
 • Artifacts on run: logs, traces, videos, and failure screenshots.
 
 ---
