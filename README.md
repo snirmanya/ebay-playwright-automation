@@ -177,5 +177,4 @@ Test artifacts are written under `artifacts/`:
 - allure serve allure-results-run_$(date +%Y%m%d_%H%M%S)
 
 ### Example Report
-![Allure Report](docs/example_allure_report_1.png)
-![Allure Report](docs/example_allure_report_2.png)
+![Allure Report](docs/example_allure_report.png)
