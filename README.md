@@ -1,79 +1,184 @@
-## Playwright eBay E2E
+# eBay Playwright Automation Framework
 
-This project implements the eBay E2E automation with **Playwright + Pytest**, using **POM**, **OOP**, **data‑driven tests**, **smart locators with fallback**, **retry logic**, and **parallel / multi‑browser runs**.
-Install Python version: 3.14
-### How to install
+End-to-end automation framework for an eBay purchase flow built with **Playwright + Python**.
+The framework demonstrates a scalable test architecture including **Page Object Model, retry mechanisms, smart locators, and structured logging**.
+---
 
-- **Create / activate venv** (optional but recommended).
-- Install dependencies:
+# Features
+• Page Object Model (POM) architecture.
+• Data-driven test inputs from YAML.
+• Retry helper and smart locator fallback for flaky UI conditions.
+• Structured logging.
+• Cross-browser execution.
+• Allure reporting integration.
+• Cross-browser execution.
+• Artifacts on run: logs, traces, videos, and failure screenshots.
+
+---
+### Layers
+
+**Tests**
+- Test scenarios
+- High-level test definitions
+
+**Flows**
+- Business flows
+- Combine multiple page operations
+
+**Pages**
+- Page Object Model implementation
+- Encapsulate UI interactions
+
+**Utils**
+- Reusable infrastructure utilities
+- Retry mechanisms
+- Logging
+- Price parsing
+
+---
+
+# Project Structure
+ebay-playwright-automation
+
+src/
+pages/
+home_page.py
+search_results_page.py
+product_page.py
+cart_page.py
+
+flows/
+purchase_flows.py
+
+utils/
+retry_helper.py
+logger.py
+price_parser.py
+
+tests/
+test_guest_purchase_flow.py
+
+---
+
+# Implemented Flow
+
+Guest purchase scenario:
+
+1. Open eBay home page
+2. Search for a product
+3. Apply max price filter
+4. Collect product URLs under price limit
+5. Add items to cart
+6. Validate cart total does not exceed budget
+
+---
+
+# Smart Locator Strategy
+
+To increase test stability:
+• Multiple locator strategies are defined for important elements  
+• Fallback locators are used if the primary locator fails  
+• Locator logic is abstracted in page classes
+
+---
+
+# Retry & Resilience Strategy
+The framework includes a retry mechanism to handle unstable UI and network delays.
+Retry is applied to critical operations such as:
+- Navigation
+- Element interaction
+- Data extraction
+This improves robustness against transient failures.
+
+---
+
+# Reporting
+Test execution generates:
+• Allure reports  
+• Screenshots on failure  
+• Execution logs
+
+## Prerequisites
+- Python 3.14 is the version currently documented for this project.
+- `pip`
+- Playwright browser binaries (installed in setup step)
+- Optional: Allure CLI (only if you want to open Allure reports)
+
+## Setup
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 playwright install
 ```
 
-### How to run the tests
+Optional: install the Allure CLI if you want to open HTML reports locally.
+The Python Allure packages used by Pytest are already installed from `requirements.txt`.
 
-- **Basic run, all browsers (chromium, firefox, webkit)**:
-
+On macOS with Homebrew:
 ```bash
-pytest --alluredir=allure-results-run_$(date +%Y%m%d_%H%M%S)
+brew install allure
+allure --version
 ```
 
-- **Parallel execution** (leverages `pytest-xdist`):
+If you are not using macOS or Homebrew, install the CLI from the official Allure docs:
+https://allurereport.org/docs/install/
 
+## Run tests
+By default, the `browser_page` fixture runs tests in `chromium` and `firefox`.
+Basic run:
 ```bash
-pytest -n auto --alluredir=allure-results-run_$(date +%Y%m%d_%H%M%S)
+pytest
 ```
 
-- **Generate Allure report** (configured via `pytest.ini` to write into `allure-results`):
-
+Run in headed mode:
 ```bash
-allure serve allure-results-run_$(date +%Y%m%d_%H%M%S) | from the previous step
+pytest --headless=false
 ```
 
-### Architecture overview
+Parallel run with `pytest-xdist`:
 
-- **Tests**:
-  - `test_guest_purchase_flow.py` – E2E scenario that calls the flow steps separately:
-    - `search_by_query`, `apply_max_price_filter`, `collect_item_urls_under_price`
-    - `add_items_to_cart`, `assert_cart_total_not_exceeds`
+```bash
+pytest -n auto
+```
 
-- **Flows** (`purchase_flow.py`):
-  - Search and results (separate steps):
-    - `search_by_query(page, query) -> None`
-    - `apply_max_price_filter(page, max_price) -> None`
-    - `collect_item_urls_under_price(page, max_price, limit=5) -> list[str]`
-  - Cart:
-    - `add_items_to_cart(page, urls, base_url="") -> int`
-    - `assert_cart_total_not_exceeds(page, budget_per_item, items_count, cart_url=...) -> None`
-  - Each function uses page objects, **retry logic**, logging, and screenshots.
+Run with Allure results output:
+```bash
+RESULT_DIR="allure-results-run_$(date +%Y%m%d_%H%M%S)"
+pytest --alluredir="$RESULT_DIR"
+allure serve "$RESULT_DIR"
+```
 
-- **Pages (POM)**:
-  - `base_page.py` – shared behaviors, `SmartLocator` usage, screenshots, navigation.
-  - `home_page.py` – search box + search button, with multiple locators per element.
-  - `search_results_page.py` – collects item URLs under a given max price across pages (paging support).
-  - `product_page.py` – random variant selection and add‑to‑cart logic.
-  - `cart_page.py` – cart total parsing and assertion.
+## Test data
 
-- **Utils / infrastructure**:
-  - `smart_locator.py` – **resilient locator utility**:
-    - Accepts a list of locators per element.
-    - Tries each with a timeout; logs success/failure per locator.
-    - Takes a screenshot and fails clearly if all locators fail.
-  - `retry_helper.py` – generic retry helper for unstable environments (timeouts, flakiness).
-  - `price_parser.py` – parses numeric value from price strings (e.g. `"US $123.45"`).
-  - `logger.py` – central logger, logging both to console and `logs/test_run.log`.
+Edit `src/data/test_data.yaml` to control runtime values:
 
-- **Configuration / data‑driven**:
-  - `data/test_data.yaml` – external test data:
-    - `base_url`, `query`, `max_price`, `limit`, `headless`, `timeout_ms`.
-  - `conftest.py` – Pytest fixtures:
-    - `test_data` – loads YAML.
-    - `browser_page` – parameterized across `chromium`, `firefox`, and `webkit`, sets timeout and headless from data.
-  - `pytest.ini` – default options and test path.
+- `base_url`
+- `cart_url`
+- `query`
+- `max_price`
+- `limit`
+- `timeout_ms`
 
-### Assumptions / limitations
+## Project layout
 
-- **Login**: Tests run as a **guest** (no login step). This matches the exercise requirement without dealing with credentials.
-- **Anti-bot protections / CAPTCHA**: Due to anti-bot protections and CAPTCHA on eBay, the solution assumes either guest flow availability or a pre-authenticated session created manually. The automation framework is designed to support real-world protected environments without attempting to bypass security mechanisms.
+- `tests/test_guest_purchase_flow.py`: end-to-end guest purchase scenario.
+- `src/flows/purchase_flow.py`: reusable flow steps for search, filter, collect, cart add, and cart validation.
+- `src/pages/`: page objects (`home_page`, `search_results_page`, `product_page`, `cart_page`).
+- `src/utils/`: logger, retry helper, smart locator, and price parser.
+- `conftest.py`: fixtures, browser setup, tracing/video/screenshot artifact handling.
+- `pytest.ini`: Pytest defaults and test discovery path.
+
+## Artifacts
+Test artifacts are written under `artifacts/`:
+
+- `artifacts/logs/test_run.log`
+- `artifacts/traces/*.zip`
+- `artifacts/videos/`
+- `artifacts/screenshots/*.png` (on failure)
+
+## Assumptions and limitations
+- Tests run as guest (no login flow).
+- eBay anti-bot protections/CAPTCHA may block automation in some environments.
+- The project does not attempt to bypass security protections.

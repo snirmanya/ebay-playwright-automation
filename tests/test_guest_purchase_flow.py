@@ -11,8 +11,8 @@ def test_guest_purchase_flow(browser_page, test_data):
     max_price = test_data["max_price"]
     limit = test_data["limit"]
 
-    PurchaseFlows.guest_purchase_flow(
-        page=page,
+    purchase_flows = PurchaseFlows(page)
+    purchase_flows.guest_purchase_flow(
         query=query,
         max_price=max_price,
         limit=limit,
