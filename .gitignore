@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+
+# virtual env
+venv/
+.venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# test artifacts
+allure-results*
+artifacts/
+logs/
+screenshots/
+traces/
+videos/
+
+# OS
+.DS_Store
+
