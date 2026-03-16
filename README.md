@@ -174,7 +174,7 @@ Test artifacts are written under `artifacts/`:
 
 ## Commands:
 - pytest -n auto --alluredir=allure-results-run_$(date +%Y%m%d_%H%M%S)
-- allure serve allure-results-run_$(date +%Y%m%d_%H%M%S)
+- allure serve allure-results-run_ + timestamp from the previous step
 
 ### Example Report
 ![Allure Report](docs/example_allure_report.png)
