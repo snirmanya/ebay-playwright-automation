@@ -1,5 +1,4 @@
 # eBay Playwright Automation Framework
-
 End-to-end automation framework for an eBay purchase flow built with **Playwright + Python**.
 The framework demonstrates a scalable test architecture including **Page Object Model, retry mechanisms, smart locators, and structured logging**.
 ---
@@ -16,7 +15,6 @@ The framework demonstrates a scalable test architecture including **Page Object 
 
 ---
 ### Layers
-
 **Tests**
 - Test scenarios
 - High-level test definitions
@@ -36,7 +34,6 @@ The framework demonstrates a scalable test architecture including **Page Object 
 - Price parsing
 
 ---
-
 # Project Structure
 ebay-playwright-automation
 
@@ -61,9 +58,7 @@ test_guest_purchase_flow.py
 ---
 
 # Implemented Flow
-
 Guest purchase scenario:
-
 1. Open eBay home page
 2. Search for a product
 3. Apply max price filter
@@ -74,7 +69,6 @@ Guest purchase scenario:
 ---
 
 # Smart Locator Strategy
-
 To increase test stability:
 • Multiple locator strategies are defined for important elements  
 • Fallback locators are used if the primary locator fails  
@@ -151,9 +145,7 @@ allure serve "$RESULT_DIR"
 ```
 
 ## Test data
-
 Edit `src/data/test_data.yaml` to control runtime values:
-
 - `base_url`
 - `cart_url`
 - `query`
@@ -162,7 +154,6 @@ Edit `src/data/test_data.yaml` to control runtime values:
 - `timeout_ms`
 
 ## Project layout
-
 - `tests/test_guest_purchase_flow.py`: end-to-end guest purchase scenario.
 - `src/flows/purchase_flow.py`: reusable flow steps for search, filter, collect, cart add, and cart validation.
 - `src/pages/`: page objects (`home_page`, `search_results_page`, `product_page`, `cart_page`).
@@ -172,7 +163,6 @@ Edit `src/data/test_data.yaml` to control runtime values:
 
 ## Artifacts
 Test artifacts are written under `artifacts/`:
-
 - `artifacts/logs/test_run.log`
 - `artifacts/traces/*.zip`
 - `artifacts/videos/`
@@ -182,3 +172,7 @@ Test artifacts are written under `artifacts/`:
 - Tests run as guest (no login flow).
 - eBay anti-bot protections/CAPTCHA may block automation in some environments.
 - The project does not attempt to bypass security protections.
+
+## Commands:
+- pytest -n auto --alluredir=allure-results-run_$(date +%Y%m%d_%H%M%S)
+- allure serve allure-results-run_$(date +%Y%m%d_%H%M%S)

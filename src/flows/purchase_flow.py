@@ -36,7 +36,7 @@ class PurchaseFlows:
 
         with allure.step("Collect product URLs"):
             urls = self.collect_item_urls_under_price(max_price=max_price, limit=limit)
-        logger.info(f"Collected URLs: {urls}")
+        # logger.info(f"Collected URLs: {urls}")
 
         with allure.step("Add collected products to cart"):
             added_count = self.add_items_to_cart(urls=urls)
@@ -95,6 +95,7 @@ class PurchaseFlows:
             budget_per_item: float,
             items_count: int,
             cart_url: str) -> None:
+        """Open cart, compare cart total against `budget_per_item * items_count`, and capture a cart screenshot."""
         cart = CartPage(self.page)
         logger.info("Navigating to cart page")
         retry(lambda: self.page.goto(cart_url))
