@@ -54,8 +54,8 @@ def pytest_addoption(parser):
     """
     parser.addoption("--headless", action="store", default="true", help="Run browser in headless mode (true/false)")
 
-# "webkit"
-@pytest.fixture(params=["chromium", "firefox"])
+
+@pytest.fixture(params=["chromium", "firefox", "webkit"])
 def browser_page(test_data, request):
     """
     Fixture to provide a Playwright page instance for each browser type.
